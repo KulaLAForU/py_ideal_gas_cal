@@ -11,6 +11,8 @@ sps_M_g_mole = {
     'N': 14.0067,
     'O': 15.9994,
     'H': 1.00794,
+    'NO': 30.0061,
+    'He': 4.002602,
 
 }
 sps_M = {sps: val / 1000 for sps, val in sps_M_g_mole.items()} # change unit to kg/mol
