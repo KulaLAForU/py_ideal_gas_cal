@@ -24,6 +24,7 @@ def calculate_mixed_gas_properties():
         num_gases = get_number_of_mixture_gases()
         M_tot = 0
         c_v_tol = 0
+        c_p_tol = 0
         for i in range(num_gases):
             sps = input(f'Please enter the chemical formula of gas {i + 1}: ')
             M_s = get_molar_mass(sps)
@@ -31,37 +32,44 @@ def calculate_mixed_gas_properties():
             M_tot += frac * M_s
             M_type = determine_molecule_type(sps)
             if M_type.lower() == 'monatomic':
-                c_v = 3/2 * R * M_s
+                c_v = 3/2 * (R / M_s)
+                c_p = (R + c_v * M_s) / M_s 
             elif M_type.lower() == 'diatomic':
                 c_v = 3/2 * (R / M_s) + 2 * (R / M_s)
+                c_p = (R + c_v * M_s) / M_s 
             else:
                 print('Polyatomic or unknown, check the model')
                 continue
             c_v_tol += frac * c_v
+            c_p_tol += frac * c_p
+        M_avg = float(M_tot)
         R_specific = R / M_tot
-        c_p_tol = R + c_v_tol #check again
         gamma = c_p_tol / c_v_tol
-        return R_specific, gamma
+        return R_specific, gamma, M_avg
 
 def calculate_R_specific_gamma():
+    M_avg = None  # 添加这一行来初始化 M_avg
     while True:
         method = input('Please choose the method to calculate R_specific (General/Boltzmann/Mayer): ')
         if method.lower() == 'general':
-            R_specific, gamma = calculate_mixed_gas_properties()
-            return R_specific, gamma
+            R_specific, gamma, M_avg = calculate_mixed_gas_properties()
         elif method.lower() == 'boltzmann':
             M = float(input('Please enter the molar mass of the gas (kg/mol): '))
             k_B = 1.38e-23  # Boltzmann constant
             R_specific = k_B / M
-            return R_specific
+            gamma = None  
+            M_avg = M  
         elif method.lower() == 'mayer':
             c_p = float(input('Please enter the specific heat capacity at constant pressure (J/mol·K): '))
             c_v = float(input('Please enter the specific heat capacity at constant volume (J/mol·K): '))
             R_specific = c_p - c_v
-            return R_specific
+            gamma = c_p / c_v  
+            M_avg = None  
         else:
-            print('Invalid method, Please input again') 
-
+            print('Invalid method, Please input again')
+            continue
+        return R_specific, gamma, M_avg  
+    
 def determine_molecule_type(sps_det):
     els = species_data.sps_M 
     count = 0
@@ -79,7 +87,7 @@ def calculate_ideal_gas_properties():
     while True:
         gas_type = input('Please enter the gas type (Mixture/Single): ')
         if gas_type.lower() == 'mixture':
-            R_specific, gamma = calculate_R_specific_gamma()
+            R_specific, gamma, M_avg = calculate_R_specific_gamma()
         elif gas_type.lower() == 'single':
             sps = input(f"Please enter the chemical formula of gas(single):")
             M = get_molar_mass(sps)
@@ -114,7 +122,7 @@ def calculate_ideal_gas_properties():
         
         
         c = c = sqrt(gamma * (P/rho))
-        print(f'Pressure: {P} Pa, Density: {rho} kg/m^3, Temperature: {T} K, R_specific: {R_specific} J/mol*K, Gamma: {gamma}, Speed of sound in present gas: {c} m/s')
+        print(f'Pressure: {P} Pa, Density: {rho} kg/m^3, Temperature: {T} K, R_specific: {R_specific} J/mol*K, Gamma: {gamma}, Speed of sound in present gas: {c} m/s, Average molecular weight: {M_avg} kg/mol')
         break
     
 if __name__ == "__main__":
