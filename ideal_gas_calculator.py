@@ -1,14 +1,24 @@
 from numpy import sqrt
 import species_data
+from chemistry import Element
 
 R = species_data.R
 
+# def get_molar_mass(sps):
+#     if sps in species_data.sps_M:
+#         return species_data.sps_M[sps]
+#     else:
+#         M = float(input(f" There don't have data exist, please enter the molar mass of {sps}: "))
+#         return M
+
 def get_molar_mass(sps):
-    if sps in species_data.sps_M:
+    if sps in Element.('sps'):
+
         return species_data.sps_M[sps]
     else:
         M = float(input(f" There don't have data exist, please enter the molar mass of {sps}: "))
         return M
+
 
 def get_number_of_mixture_gases():
     while True:
@@ -48,7 +58,7 @@ def calculate_mixed_gas_properties():
         return R_specific, gamma, M_avg
 
 def calculate_R_specific_gamma():
-    M_avg = None  # 添加这一行来初始化 M_avg
+    M_avg = None  
     while True:
         method = input('Please choose the method to calculate R_specific (General/Boltzmann/Mayer): ')
         if method.lower() == 'general':
