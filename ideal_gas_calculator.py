@@ -1,6 +1,7 @@
-from numpy import sqrt
+import os
+from numpy import exp, sqrt, log10
 import species_data
-from chemistry import Element
+from chemistry.element import Element
 
 R = species_data.R
 
@@ -12,13 +13,26 @@ R = species_data.R
 #         return M
 
 def get_molar_mass(sps):
-    if sps in Element.('sps'):
+    try:
+        element = Element(sps)
+        specie_data = element.get_info()['specie']
+        M_s_g = specie_data.get('molWeight')
+        M_s = M_s_g / 1000
+        return M_s
+    except ValueError as e:
+        print("Value error of molar mass")
 
-        return species_data.sps_M[sps]
-    else:
-        M = float(input(f" There don't have data exist, please enter the molar mass of {sps}: "))
-        return M
-
+def get_BlottnerEucken(sps):
+    try:
+        element = Element(sps)
+        transport_data = element.get_info()['transport']
+        blottner_eucken = transport_data.get('BlottnerEucken', {})
+        A = blottner_eucken.get('A')
+        B = blottner_eucken.get('B')
+        C = blottner_eucken.get('C')
+        return A, B, C
+    except ValueError as e:
+        print("Value error of BlottnerEucken")
 
 def get_number_of_mixture_gases():
     while True:
@@ -35,6 +49,11 @@ def calculate_mixed_gas_properties():
         M_tot = 0
         c_v_tol = 0
         c_p_tol = 0
+        A_tol = 0
+        B_tol = 0  
+        C_tol = 0
+        mu_tol = 0
+
         for i in range(num_gases):
             sps = input(f'Please enter the chemical formula of gas {i + 1}: ')
             M_s = get_molar_mass(sps)
@@ -52,33 +71,49 @@ def calculate_mixed_gas_properties():
                 continue
             c_v_tol += frac * c_v
             c_p_tol += frac * c_p
+            A, B, C = get_BlottnerEucken(sps)
+            A_tol += frac * A  
+            B_tol += frac * B
+            C_tol += frac * C
         M_avg = float(M_tot)
+        T = Temperature()
+        mu_tol += frac * 0.1 * exp(A_tol * (log10(T) ** 2) + B_tol * log10(T) + C_tol)
         R_specific = R / M_tot
         gamma = c_p_tol / c_v_tol
-        return R_specific, gamma, M_avg
+        
+        return R_specific, gamma, M_avg, mu_tol, T
+
+def Temperature():
+    T = float(input(f'Please enter the temperature of (K): '))
+    return T
 
 def calculate_R_specific_gamma():
     M_avg = None  
+    mu_tol = None
     while True:
         method = input('Please choose the method to calculate R_specific (General/Boltzmann/Mayer): ')
         if method.lower() == 'general':
-            R_specific, gamma, M_avg = calculate_mixed_gas_properties()
+            R_specific, gamma, M_avg, mu_tol, T = calculate_mixed_gas_properties()
         elif method.lower() == 'boltzmann':
             M = float(input('Please enter the molar mass of the gas (kg/mol): '))
             k_B = 1.38e-23  # Boltzmann constant
             R_specific = k_B / M
             gamma = None  
             M_avg = M  
+            mu_tol = None
+            T = Temperature()
         elif method.lower() == 'mayer':
-            c_p = float(input('Please enter the specific heat capacity at constant pressure (J/mol·K): '))
-            c_v = float(input('Please enter the specific heat capacity at constant volume (J/mol·K): '))
+            c_p = float(input('Please enter the specific heat capacity at constant pressure (J/g·K): '))
+            c_v = float(input('Please enter the specific heat capacity at constant volume (J/g·K): '))
             R_specific = c_p - c_v
             gamma = c_p / c_v  
+            T = Temperature()
             M_avg = None  
+            mu_tol = None   
         else:
             print('Invalid method, Please input again')
             continue
-        return R_specific, gamma, M_avg  
+        return R_specific, gamma, M_avg, mu_tol, T
     
 def determine_molecule_type(sps_det):
     els = species_data.sps_M 
@@ -97,16 +132,17 @@ def calculate_ideal_gas_properties():
     while True:
         gas_type = input('Please enter the gas type (Mixture/Single): ')
         if gas_type.lower() == 'mixture':
-            R_specific, gamma, M_avg = calculate_R_specific_gamma()
+            R_specific, gamma, M_avg, mu_tol, T = calculate_R_specific_gamma()
         elif gas_type.lower() == 'single':
             sps = input(f"Please enter the chemical formula of gas(single):")
+            T = Temperature()
             M = get_molar_mass(sps)
             R_specific = R / M
         else:
             print('Invalid gas type, try again')
             continue
 
-        given_properties = input('Please enter the given properties (P, rho, T, any two, separated by commas): ').split(',')
+        given_properties = input('Please enter the given properties (P, rho (P and rho just need one), Mach or u, L , separated by commas): ').split(',')
 
         if 'P' in given_properties:
             P = float(input('Please enter the pressure (Pa): '))
@@ -114,25 +150,46 @@ def calculate_ideal_gas_properties():
             P = None
 
         if 'rho' in given_properties:
-            rho = float(input('Please enter the density (moles): kg/m^3'))
+            rho = float(input('Please enter the density (moles) (kg/m^3): '))
         else:
             rho = None
 
-        if 'T' in given_properties:
-            T = float(input('Please enter the temperature (K): '))
+        if 'Mach' in given_properties:
+            mach = float(input('Please enter the Mach number in x direction: '))
         else:
-            T = None
+            mach = None
+
+        if 'u' in given_properties: 
+            u = float(input('Please enter the velocity in x direction (m/s): '))
+        else:   
+            u = None
+
+        if 'L' in given_properties:
+            L = float(input('Please enter the characteristic length (m): '))
+        else:
+            mach = None
+
+        # if 'T' in given_properties:
+        #     T = float(input('Please enter the temperature (K): '))
+        # else:
+        #     T = None
 
         if P is None:
             P = rho * R_specific * T
         if rho is None:
             rho = P / (R_specific * T)
-        if T is None:
-            T = P / (R_specific * rho)
+        # if T is None:
+        #     T = P / (R_specific * rho)
+        c = sqrt(gamma * (P/rho))
+        if mach is None:
+            mach = u / c
+            Re = (rho * u * L) / mu_tol
+        if u is None:
+            u = mach * c
+            Re = (rho * mach * c * L) / mu_tol
         
-        
-        c = c = sqrt(gamma * (P/rho))
-        print(f'Pressure: {P} Pa, Density: {rho} kg/m^3, Temperature: {T} K, R_specific: {R_specific} J/mol*K, Gamma: {gamma}, Speed of sound in present gas: {c} m/s, Average molecular weight: {M_avg} kg/mol')
+
+        print(f'\nPressure: {P} Pa,\n Density: {rho} kg/m^3,\n Temperature: {T} K,\n R_specific: {R_specific} J/mol*K,\n Gamma: {gamma},\n Speed of sound in present gas: {c} m/s,\n Current Mach number: {mach},\n Current speed: {u} m/s,\n Average molecular weight: {M_avg} kg/mol,\n Dynamic viscosity: {mu_tol} Pa*s or N*s/m^2,\n Reynolds number: {Re}\n')
         break
     
 if __name__ == "__main__":

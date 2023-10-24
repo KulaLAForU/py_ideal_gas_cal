@@ -32,26 +32,26 @@ class Element:
             "transport": self.transport,
         }
 
+# For instruction
+# if __name__ == "__main__":
+#     try:
+#         element = input(f"Please enter the chemical formula of gas: ")
+#         element_obj = Element(element)
+#         specie_data = element_obj.get_info()['specie']
+#         transport_data = element_obj.get_info()['transport']
 
-if __name__ == "__main__":
-    try:
-        element = input(f"Please enter the chemical formula of gas: ")
-        element_obj = Element(element)
-        specie_data = element_obj.get_info()['specie']
-        transport_data = element_obj.get_info()['transport']
+#         # From here can right which data incide the 3 theme wanna be used
 
-        # From here can right which data incide the 3 theme wanna be used
+#         M_s = specie_data.get('molWeight')
+#         blottner_eucken = transport_data.get('BlottnerEucken', {})
 
-        M_s = specie_data.get('molWeight')
-        blottner_eucken = transport_data.get('BlottnerEucken', {})
+#         A = blottner_eucken.get('A')
+#         B = blottner_eucken.get('B')
+#         C = blottner_eucken.get('C')
+#         print(f"A: {A}, B: {B}, C: {C}, M_s: {M_s}")
 
-        A = blottner_eucken.get('A')
-        B = blottner_eucken.get('B')
-        C = blottner_eucken.get('C')
-        print(f"A: {A}, B: {B}, C: {C}, M_s: {M_s}")
-
-    except ValueError as e:
-        print("Value error")
+#     except ValueError as e:
+#         print("Value error")
 
 
 
