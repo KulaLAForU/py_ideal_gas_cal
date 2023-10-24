@@ -24,6 +24,8 @@ because the specific heat at constant volume for species s for translational ene
 For monatonic:
                 c_v = 3/2 * (R / M_s)
                 c_p = (R + c_v * M_s) / M_s 
+
+
 For diatomic:
                 c_v = 3/2 * (R / M_s) + 2 * (R / M_s)
                 c_p = (R + c_v * M_s) / M_s 
