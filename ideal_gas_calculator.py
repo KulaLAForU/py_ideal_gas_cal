@@ -49,10 +49,8 @@ def calculate_mixed_gas_properties():
         M_tot = 0
         c_v_tol = 0
         c_p_tol = 0
-        A_tol = 0
-        B_tol = 0  
-        C_tol = 0
         mu_tol = 0
+        T = Temperature()
 
         for i in range(num_gases):
             sps = input(f'Please enter the chemical formula of gas {i + 1}: ')
@@ -72,12 +70,9 @@ def calculate_mixed_gas_properties():
             c_v_tol += frac * c_v
             c_p_tol += frac * c_p
             A, B, C = get_BlottnerEucken(sps)
-            A_tol += frac * A  
-            B_tol += frac * B
-            C_tol += frac * C
+            mu_tol += frac * 0.1 * exp(A * (log10(T) ** 2) + B * log10(T) + C)
+
         M_avg = float(M_tot)
-        T = Temperature()
-        mu_tol += frac * 0.1 * exp(A_tol * (log10(T) ** 2) + B_tol * log10(T) + C_tol)
         R_specific = R / M_tot
         gamma = c_p_tol / c_v_tol
         
@@ -142,7 +137,7 @@ def calculate_ideal_gas_properties():
             print('Invalid gas type, try again')
             continue
 
-        given_properties = input('Please enter the given properties (P, rho (P and rho just need one), Mach or u, L , separated by commas): ').split(',')
+        given_properties = input('Please enter the given properties P or rho, Mach or u, L , separated by commas): ').split(',')
 
         if 'P' in given_properties:
             P = float(input('Please enter the pressure (Pa): '))
