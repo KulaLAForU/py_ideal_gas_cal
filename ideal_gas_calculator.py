@@ -1,5 +1,5 @@
 import os
-from numpy import exp, sqrt, log10
+from numpy import exp, sqrt, log10, log as ln
 import species_data
 from chemistry.element import Element
 
@@ -62,15 +62,17 @@ def calculate_mixed_gas_properties():
                 c_v = 3/2 * (R / M_s)
                 c_p = (R + c_v * M_s) / M_s 
             elif M_type.lower() == 'diatomic':
-                c_v = 3/2 * (R / M_s) + 2 * (R / M_s)
+                c_v = 3/2 * (R / M_s) +  (R / M_s)
                 c_p = (R + c_v * M_s) / M_s 
             else:
                 print('Polyatomic or unknown, check the model')
                 continue
+            # Notice here is just apply the rule of mixture to calculate the specific heat capacity(c_rot + c_vib = c_vib), the vibration part will be added later
             c_v_tol += frac * c_v
             c_p_tol += frac * c_p
             A, B, C = get_BlottnerEucken(sps)
-            mu_tol += frac * 0.1 * exp(A * (log10(T) ** 2) + B * log10(T) + C)
+            mu_tol += frac * 0.1 * exp(A * (ln(T) ** 2) + B * ln(T) + C)
+            print(A,B,C)
 
         M_avg = float(M_tot)
         R_specific = R / M_tot
@@ -111,13 +113,15 @@ def calculate_R_specific_gamma():
         return R_specific, gamma, M_avg, mu_tol, T
     
 def determine_molecule_type(sps_det):
-    els = species_data.sps_M 
+    els = Element(sps_det).get_info()['specie']['elements']
     count = 0
     for el in els:
         count += sps_det.count(el)
     if count == 1:
+        print('Species: {sps_det}, Monatomic')
         return 'Monatomic'
     elif count == 2:
+        print('Species: {sps_det}, Diatomic')
         return 'Diatomic'
     else:
         return 'Polyatomic or Unknown'
@@ -176,6 +180,7 @@ def calculate_ideal_gas_properties():
         # if T is None:
         #     T = P / (R_specific * rho)
         c = sqrt(gamma * (P/rho))
+        c_2 = sqrt(gamma * R_specific * T)
         if mach is None:
             mach = u / c
             Re = (rho * u * L) / mu_tol
@@ -184,7 +189,7 @@ def calculate_ideal_gas_properties():
             Re = (rho * mach * c * L) / mu_tol
         
 
-        print(f'\nPressure: {P} Pa,\n Density: {rho} kg/m^3,\n Temperature: {T} K,\n R_specific: {R_specific} J/mol*K,\n Gamma: {gamma},\n Speed of sound in present gas: {c} m/s,\n Current Mach number: {mach},\n Current speed: {u} m/s,\n Average molecular weight: {M_avg} kg/mol,\n Dynamic viscosity: {mu_tol} Pa*s or N*s/m^2,\n Reynolds number: {Re}\n')
+        print(f'\nPressure: {P} Pa,\n Density: {rho} kg/m^3,\n Temperature: {T} K,\n R_specific: {R_specific} J/mol*K,\n Gamma: {gamma},\n Speed of sound in present gas: {c} m/s,\n Current Mach number: {mach},\n Current speed: {u} m/s,\n Average molecular weight: {M_avg} kg/mol,\n Dynamic viscosity: {mu_tol} Pa*s or N*s/m^2,\n Reynolds number: {Re}\n, c_2 :{c_2}\n' )
         break
     
 if __name__ == "__main__":
