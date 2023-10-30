@@ -72,7 +72,7 @@ def calculate_mixed_gas_properties():
             c_p_tol += frac * c_p
             A, B, C = get_BlottnerEucken(sps)
             mu_tol += frac * 0.1 * exp(A * (ln(T) ** 2) + B * ln(T) + C)
-            print(A,B,C)
+            
 
         M_avg = float(M_tot)
         R_specific = R / M_tot
@@ -113,14 +113,13 @@ def calculate_R_specific_gamma():
         return R_specific, gamma, M_avg, mu_tol, T
     
 def determine_molecule_type(sps_det):
-    els = Element(sps_det).get_info()['specie']['elements']
-    count = 0
-    for el in els:
-        count += sps_det.count(el)
-    if count == 1:
+    element = Element(sps_det)
+    specie_data = element.get_info()['specie']
+    particle_type = specie_data.get('particleType')
+    if particle_type == 1:
         print('Species: {sps_det}, Monatomic')
         return 'Monatomic'
-    elif count == 2:
+    elif particle_type == 2:
         print('Species: {sps_det}, Diatomic')
         return 'Diatomic'
     else:
