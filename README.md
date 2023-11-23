@@ -30,6 +30,19 @@ For diatomic:
                 c_v = 3/2 * (R / M_s) + 2 * (R / M_s)
                 c_p = (R + c_v * M_s) / M_s 
 
+# What data I can get:
+
+Pressure: {P} Pa
+Density: {rho} kg/m^3
+Temperature: {T} K
+R_specific: {R_specific} J/mol*K
+Gamma: {gamma}
+Speed of sound in present gas: {c} m/s
+Current Mach number: {mach}
+Current speed: {u} m/s
+Average molecular weight: {M_avg} kg/mol
+Dynamic viscosity: {mu_tol} Pa*s or N*s/m^2
+Reynolds number: {Re}\n, c_2 :{c_2}
 
 # How to use:
 

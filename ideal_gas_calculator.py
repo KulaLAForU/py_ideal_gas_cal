@@ -60,7 +60,7 @@ def calculate_mixed_gas_properties():
             M_type = determine_molecule_type(sps)
             if M_type.lower() == 'monatomic':
                 c_v = 3/2 * (R / M_s)
-                c_p = (R + c_v * M_s) / M_s 
+                c_p = (R + c_v * M_s) / M_s # R = J/ kg*K, c_v = (J/K)
             elif M_type.lower() == 'diatomic':
                 c_v = 3/2 * (R / M_s) +  (R / M_s)
                 c_p = (R + c_v * M_s) / M_s 
@@ -117,10 +117,10 @@ def determine_molecule_type(sps_det):
     specie_data = element.get_info()['specie']
     particle_type = specie_data.get('particleType')
     if particle_type == 1:
-        print('Species: {sps_det}, Monatomic')
+        print('Monatomic')
         return 'Monatomic'
     elif particle_type == 2:
-        print('Species: {sps_det}, Diatomic')
+        print('Diatomic')
         return 'Diatomic'
     else:
         return 'Polyatomic or Unknown'
@@ -180,6 +180,7 @@ def calculate_ideal_gas_properties():
         #     T = P / (R_specific * rho)
         c = sqrt(gamma * (P/rho))
         c_2 = sqrt(gamma * R_specific * T)
+        
         if mach is None:
             mach = u / c
             Re = (rho * u * L) / mu_tol
@@ -188,7 +189,7 @@ def calculate_ideal_gas_properties():
             Re = (rho * mach * c * L) / mu_tol
         
 
-        print(f'\nPressure: {P} Pa,\n Density: {rho} kg/m^3,\n Temperature: {T} K,\n R_specific: {R_specific} J/mol*K,\n Gamma: {gamma},\n Speed of sound in present gas: {c} m/s,\n Current Mach number: {mach},\n Current speed: {u} m/s,\n Average molecular weight: {M_avg} kg/mol,\n Dynamic viscosity: {mu_tol} Pa*s or N*s/m^2,\n Reynolds number: {Re}\n, c_2 :{c_2}\n' )
+        print(f'\nPressure: {P} Pa,\n Density: {rho} kg/m^3,\n Temperature: {T} K,\n R_specific: {R_specific} J/mol*K,\n Gamma: {gamma},\n Speed of sound in present gas: {c} m/s,\n Current Mach number: {mach},\n Current speed: {u} m/s,\n Average molecular weight: {M_avg} kg/mol,\n Dynamic viscosity: {mu_tol} Pa*s or N*s/m^2,\n Reynolds number: {Re},\n c_2 :{c_2}\n' )
         break
     
 if __name__ == "__main__":
