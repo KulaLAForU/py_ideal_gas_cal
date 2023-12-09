@@ -78,7 +78,7 @@ def calculate_mixed_gas_properties():
         R_specific = R / M_tot
         gamma = c_p_tol / c_v_tol
         
-        return R_specific, gamma, M_avg, mu_tol, T
+        return R_specific, gamma, M_avg, mu_tol, T, c_v_tol, c_p_tol
 
 def Temperature():
     T = float(input(f'Please enter the temperature of (K): '))
@@ -90,7 +90,7 @@ def calculate_R_specific_gamma():
     while True:
         method = input('Please choose the method to calculate R_specific (General/Boltzmann/Mayer): ')
         if method.lower() == 'general':
-            R_specific, gamma, M_avg, mu_tol, T = calculate_mixed_gas_properties()
+            R_specific, gamma, M_avg, mu_tol, T, c_v_tol, c_p_tol = calculate_mixed_gas_properties()
         elif method.lower() == 'boltzmann':
             M = float(input('Please enter the molar mass of the gas (kg/mol): '))
             k_B = 1.38e-23  # Boltzmann constant
@@ -110,7 +110,7 @@ def calculate_R_specific_gamma():
         else:
             print('Invalid method, Please input again')
             continue
-        return R_specific, gamma, M_avg, mu_tol, T
+        return R_specific, gamma, M_avg, mu_tol, T, c_v_tol, c_p_tol
     
 def determine_molecule_type(sps_det):
     element = Element(sps_det)
@@ -130,7 +130,7 @@ def calculate_ideal_gas_properties():
     while True:
         gas_type = input('Please enter the gas type (Mixture/Single): ')
         if gas_type.lower() == 'mixture':
-            R_specific, gamma, M_avg, mu_tol, T = calculate_R_specific_gamma()
+            R_specific, gamma, M_avg, mu_tol, T, c_v_tol, c_p_tol = calculate_R_specific_gamma()
         elif gas_type.lower() == 'single':
             sps = input(f"Please enter the chemical formula of gas(single):")
             T = Temperature()
@@ -189,7 +189,7 @@ def calculate_ideal_gas_properties():
             Re = (rho * mach * c * L) / mu_tol
         
 
-        print(f'\nPressure: {P} Pa,\n Density: {rho} kg/m^3,\n Temperature: {T} K,\n R_specific: {R_specific} J/mol*K,\n Gamma: {gamma},\n Speed of sound in present gas: {c} m/s,\n Current Mach number: {mach},\n Current speed: {u} m/s,\n Average molecular weight: {M_avg} kg/mol,\n Dynamic viscosity: {mu_tol} Pa*s or N*s/m^2,\n Reynolds number: {Re},\n c_2 :{c_2}\n' )
+        print(f'\nPressure: {P} Pa,\n Density: {rho} kg/m^3,\n Temperature: {T} K,\n R_specific: {R_specific} J/mol*K,\n Gamma: {gamma},\n Speed of sound in present gas: {c} m/s,\n Current Mach number: {mach},\n Current speed: {u} m/s,\n Average molecular weight: {M_avg} kg/mol,\n Dynamic viscosity: {mu_tol} Pa*s or N*s/m^2,\n Reynolds number: {Re},\n c_2 :{c_2},\n c_p: {c_p_tol}J/g·K,\n c_v: {c_v_tol}J/g·K' )
         break
     
 if __name__ == "__main__":
