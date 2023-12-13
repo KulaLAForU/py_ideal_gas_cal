@@ -2,7 +2,7 @@
 Use ideal gas law to calculate PV=nRT, specific heat capacity of constant volume, heat capasity of constant pressure, gamma (the adiabatic index also known as the isentropic expansion factor (c_p / c_v)), Blottner and Eucken viscosity model and speed of sound in the gas.
 For gas specific constant calculation, 3 methods can be choose:
 
-1) General
+1) General (Been tesetd)
 2) Using Boltzmann constant
 3) Use Mayer's relation
 
@@ -29,6 +29,9 @@ For monatonic:
 For diatomic:
                 c_v = 3/2 * (R / M_s) + 2 * (R / M_s)
                 c_p = (R + c_v * M_s) / M_s 
+
+# Notice this: Here is just apply the rule of mixture to calculate the specific heat capacity(c_rot + c_vib = c_vib), the vibration part will be added later
+
 
 # What data I can get:
 
