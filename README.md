@@ -1,4 +1,7 @@
 # py_ideal_gas_cal
+
+# Ideal gas and Flat Plate boundary layer calculation
+
 Use ideal gas law to calculate PV=nRT, specific heat capacity of constant volume, heat capasity of constant pressure, gamma (the adiabatic index also known as the isentropic expansion factor (c_p / c_v)), Blottner and Eucken viscosity model and speed of sound in the gas.
 For gas specific constant calculation, 3 methods can be choose:
 
