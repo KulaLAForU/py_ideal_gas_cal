@@ -21,16 +21,16 @@ This code can tell if you are monatomic or diatomic,
 and thus use a different calculation for specific heat capacity,
 because the specific heat at constant volume for species s for translational energy c_v_tr_s is a completely different calculation than c_v_rot_s and c_v_vib_s as follow 
 
-For monatonic:
+For monotonic:
                 c_v = 3/2 * (R / M_s)
                 c_p = (R + c_v * M_s) / M_s 
 
 
 For diatomic:
-                c_v = 3/2 * (R / M_s) + 2 * (R / M_s)
+                c_v = 3/2 * (R / M_s) + 2 * (R / M_s) (Last part is rot + vib)
                 c_p = (R + c_v * M_s) / M_s 
 
-# Notice this: Here is just apply the rule of mixture to calculate the specific heat capacity(c_rot + c_vib = c_vib), the vibration part will be added later
+# Notice this: Here is just apply the rule of mixture to calculate the specific heat capacity(c_rot + c_vib = c_vib, in code will be c_v = 3/2 * (R / M_s) + (R / M_s)), the vibration part will be added later
 
 
 # What data I can get:

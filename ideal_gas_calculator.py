@@ -142,7 +142,7 @@ def calculate_ideal_gas_properties():
 
         given_properties = input('Please enter the given properties P or rho, Mach or u, L , separated by commas): ').split(',')
 
-        if 'P' in given_properties:
+        if 'P' or 'p' in given_properties or 'p' in given_properties:
             P = float(input('Please enter the pressure (Pa): '))
         else:
             P = None
@@ -162,35 +162,53 @@ def calculate_ideal_gas_properties():
         else:   
             u = None
 
-        if 'L' in given_properties:
+        if 'L' or 'l' in given_properties:
             L = float(input('Please enter the characteristic length (m): '))
         else:
-            mach = None
+            L = None
 
-        # if 'T' in given_properties:
-        #     T = float(input('Please enter the temperature (K): '))
-        # else:
-        #     T = None
+        if L is None:
+            print('Basic gas calculaiton')
+            if P is None:
+                P = rho * R_specific * T
+            if rho is None:
+                rho = P / (R_specific * T)
 
-        if P is None:
-            P = rho * R_specific * T
-        if rho is None:
-            rho = P / (R_specific * T)
-        # if T is None:
-        #     T = P / (R_specific * rho)
-        c = sqrt(gamma * (P/rho))
-        c_2 = sqrt(gamma * R_specific * T)
-        
-        if mach is None:
-            mach = u / c
-            Re = (rho * u * L) / mu_tol
-        if u is None:
-            u = mach * c
-            Re = (rho * mach * c * L) / mu_tol
-        
+            c = sqrt(gamma * (P/rho))
 
-        print(f'\nPressure: {P} Pa,\n Density: {rho} kg/m^3,\n Temperature: {T} K,\n R_specific: {R_specific} J/mol*K,\n Gamma: {gamma},\n Speed of sound in present gas: {c} m/s,\n Current Mach number: {mach},\n Current speed: {u} m/s,\n Average molecular weight: {M_avg} kg/mol,\n Dynamic viscosity: {mu_tol} Pa*s or N*s/m^2,\n Reynolds number: {Re},\n c_2 :{c_2},\n c_p: {c_p_tol}J/g·K,\n c_v: {c_v_tol}J/g·K' )
-        break
+            if mach is None:
+                mach = u / c
+            if u is None:
+                u = mach * c            
+
+            print(f'\nPressure: {P} Pa,\n Density: {rho} kg/m^3,\n Temperature: {T} K,\n'
+                f'R_specific: {R_specific} J/mol*K,\n Gamma: {gamma},\n Speed of sound in present gas: {c} m/s,\n'
+                f'Current Mach number: {mach},\n Current speed: {u} m/s,\n Average molecular weight: {M_avg} kg/mol,\n'
+                f'Dynamic viscosity: {mu_tol} Pa*s or N*s/m^2,\n c_p: {c_p_tol}J/g·K,\n c_v: {c_v_tol}J/g·K' )
+            break
+        else:
+            print('Flat plate boundary layer calculation')
+            if P is None:
+                P = rho * R_specific * T
+            if rho is None:
+                rho = P / (R_specific * T)
+
+            c = sqrt(gamma * (P/rho))
+            # c_2 = sqrt(gamma * R_specific * T)
+            
+            if mach is None:
+                mach = u / c
+                Re = (rho * u * L) / mu_tol
+            if u is None:
+                u = mach * c
+                Re = (rho * mach * c * L) / mu_tol
+            
+
+            print(f'\nPressure: {P} Pa,\n Density: {rho} kg/m^3,\n Temperature: {T} K,\n'
+                f'R_specific: {R_specific} J/mol*K,\n Gamma: {gamma},\n Speed of sound in present gas: {c} m/s,\n'
+                f'Current Mach number: {mach},\n Current speed: {u} m/s,\n Average molecular weight: {M_avg} kg/mol,\n'
+                f'Dynamic viscosity: {mu_tol} Pa*s or N*s/m^2,\n Reynolds number: {Re},\n c_p: {c_p_tol}J/g·K,\n c_v: {c_v_tol}J/g·K' )
+            break
     
 if __name__ == "__main__":
     calculate_ideal_gas_properties()
