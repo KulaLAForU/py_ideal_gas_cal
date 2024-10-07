@@ -140,9 +140,9 @@ def calculate_ideal_gas_properties():
             print('Invalid gas type, try again')
             continue
 
-        given_properties = input('Please enter the given properties P or rho, Mach or u, L , separated by commas): ').split(',')
+        given_properties = input('Please enter the given properties of \n R(selected, if hypersonic sphere),\n P or rho or rhoR(if hypersonic sphere), \n Mach or u,\n L(selected, if Flat Plate),\n separated by commas: ').split(',')
 
-        if 'P' or 'p' in given_properties or 'p' in given_properties:
+        if 'P' in given_properties or 'p' in given_properties:
             P = float(input('Please enter the pressure (Pa): '))
         else:
             P = None
@@ -150,7 +150,12 @@ def calculate_ideal_gas_properties():
         if 'rho' in given_properties:
             rho = float(input('Please enter the density (moles) (kg/m^3): '))
         else:
-            rho = None
+            if 'r' in given_properties or 'R' in given_properties:
+                r = float(input('Please enter the sphere radius (M): '))
+
+            if 'rhoR' in given_properties or 'rhor' in given_properties:
+                rhoR = float(input('Please enter the density times characteristic length (kg/m^2): '))
+                rho = rhoR / r
 
         if 'Mach' in given_properties:
             mach = float(input('Please enter the Mach number in x direction: '))
@@ -162,7 +167,7 @@ def calculate_ideal_gas_properties():
         else:   
             u = None
 
-        if 'L' or 'l' in given_properties:
+        if 'L' in given_properties or 'l' in given_properties:
             L = float(input('Please enter the characteristic length (m): '))
         else:
             L = None
