@@ -156,6 +156,8 @@ def calculate_ideal_gas_properties():
             if 'rhoR' in given_properties or 'rhor' in given_properties:
                 rhoR = float(input('Please enter the density times characteristic length (kg/m^2): '))
                 rho = rhoR / r
+            else:
+                rho = None
 
         if 'Mach' in given_properties:
             mach = float(input('Please enter the Mach number in x direction: '))
